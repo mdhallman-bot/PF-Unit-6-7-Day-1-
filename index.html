@@ -67,6 +67,18 @@
   .sort-feedback.good{background:#e8f4ea;color:#285c39}
   .sort-feedback.warn{background:#fff3df;color:#7c4d12}
   .sort-feedback.bad{background:#fae9e7;color:#7d342f}
+  .vocab-bank{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .vocab-chip{font-family:Arial,sans-serif;font-size:.85rem;border:1px solid #9aa8b5;background:white;border-radius:16px;padding:6px 10px;cursor:grab;user-select:none}
+  .vocab-chip.selected{outline:3px solid #d7b560;background:#fff8e5}
+  .vocab-chip.used{opacity:.42;cursor:default}
+  .vocab-def-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+  .vocab-drop{border:2px dashed #c3cbd3;border-radius:6px;padding:10px;min-height:92px;background:#fafafa}
+  .vocab-drop.dragover{border-color:var(--accent2);background:#fff9e8}
+  .vocab-drop .def{font-family:Arial,sans-serif;font-size:.86rem;color:#333;margin-bottom:8px}
+  .vocab-drop .answer{font-family:Arial,sans-serif;font-weight:bold;color:var(--accent);min-height:24px}
+  .vocab-drop.correct{border-color:var(--good);background:#eef7f0}
+  .vocab-drop.incorrect{border-color:var(--bad);background:#fbefee}
+  @media (max-width:760px){.vocab-def-list{grid-template-columns:1fr}}
   .vocab{border-bottom:1px dotted var(--accent);cursor:help;position:relative;font-weight:bold}
   .vocab:focus{outline:2px solid #9eb3cb;outline-offset:2px}
   .vocab-tip{display:none;position:absolute;z-index:10;left:0;top:1.4em;width:260px;background:#222;color:white;padding:8px;border-radius:5px;font-family:Arial,sans-serif;font-size:.8rem;font-weight:normal}
@@ -344,7 +356,25 @@
 <label for="workingUnknown">One thing I still need to investigate</label>
 <textarea id="workingUnknown" data-save></textarea>
 
-<h2>11. Closing Synthesis</h2>
+
+<h2>11. Quick Vocabulary Check</h2>
+<span class="segment-tag">Drag & drop · self-checking · no AI</span>
+<div class="prompt">
+  Match each term to its best definition. <strong>Drag</strong> a term into a definition box. On a phone or Chromebook touch screen, you can also <strong>tap a term, then tap a definition</strong>.
+</div>
+
+<div id="vocabQuizWrap">
+  <div class="panel small-ui">
+    <strong>Terms</strong>
+    <div id="vocabTermBank" class="vocab-bank"></div>
+  </div>
+  <div id="vocabDefinitionList" class="vocab-def-list"></div>
+  <button type="button" id="checkVocabBtn">Check vocabulary</button>
+  <button type="button" id="resetVocabBtn">Reset vocabulary</button>
+  <div id="vocabQuizFeedback"></div>
+</div>
+
+<h2>12. Closing Synthesis</h2>
 <span class="segment-tag">Independent · no AI</span>
 <div class="prompt">
   A friend tells you: <strong>“Just choose whichever career pays the most.”</strong>
@@ -418,6 +448,24 @@ let sortState = {
   assignments: {}
 };
 
+const VOCAB_ITEMS = [
+  {term:'apprenticeship', def:'A structured program that combines paid, supervised work with related instruction.'},
+  {term:'credential', def:'Evidence that a person has met a defined standard of knowledge or skill.'},
+  {term:'license', def:'Legal permission from a government authority to practice certain work.'},
+  {term:'psychic income', def:'The non-money satisfaction, enjoyment, purpose, or other value a person gets from work.'},
+  {term:'opportunity cost', def:'The value of the next-best alternative you give up when you make a choice.'},
+  {term:'return on investment (ROI)', def:'A way to compare what you put into a choice with the value or benefits you may get back.'},
+  {term:'complement', def:'When AI helps a worker do a task faster, better, or more effectively.'},
+  {term:'substitute', def:'When AI can take over a task that a person used to do.'}
+];
+
+let vocabQuizState = {
+  attempts: 0,
+  locked: false,
+  placements: {},
+  selectedTerm: ''
+};
+
 const REQUIRED_GROUPS = [
   {name:'Do Now', ids:['doNow']},
   {name:'PBS video reflection', ids:['videoQ1','videoQ2']},
@@ -430,6 +478,7 @@ const REQUIRED_GROUPS = [
   {name:'Opportunity cost + ROI', ids:['oppCost','roiThinking']},
   {name:'AI and future of work', ids:['aiCareer','aiComplement','aiSubstitute','aiRiskReflection']},
   {name:'Working path', ids:['workingPath','workingWhy','workingPrep','workingTime','workingPay','workingUnknown']},
+  {name:'Vocabulary check', special:'vocabquiz'},
   {name:'Closing synthesis', ids:['closing']}
 ];
 
@@ -477,6 +526,7 @@ function collectState(){
     submittedAt,
     fields,
     sortState,
+    vocabQuizState,
     completion: computeCompletion()
   };
 }
@@ -500,8 +550,17 @@ function applyState(state){
       assignments: state.sortState.assignments || {}
     };
   }
+  if(state.vocabQuizState){
+    vocabQuizState = {
+      attempts: Number(state.vocabQuizState.attempts || 0),
+      locked: Boolean(state.vocabQuizState.locked),
+      placements: state.vocabQuizState.placements || {},
+      selectedTerm: ''
+    };
+  }
   submittedAt = state.submittedAt || '';
   renderSort();
+  renderVocabQuiz();
   updateProgress();
 }
 
@@ -767,6 +826,129 @@ function resetSort(){
   scheduleSave();
 }
 
+
+function vocabTermUsed(term){
+  return Object.values(vocabQuizState.placements || {}).includes(term);
+}
+
+function assignVocab(term, idx){
+  if(vocabQuizState.locked) return;
+  Object.keys(vocabQuizState.placements).forEach(k => {
+    if(vocabQuizState.placements[k] === term) delete vocabQuizState.placements[k];
+  });
+  vocabQuizState.placements[String(idx)] = term;
+  vocabQuizState.selectedTerm = '';
+  renderVocabQuiz();
+  scheduleSave();
+}
+
+function renderVocabQuiz(){
+  const bank = document.getElementById('vocabTermBank');
+  const list = document.getElementById('vocabDefinitionList');
+  if(!bank || !list) return;
+
+  bank.innerHTML = VOCAB_ITEMS.map((item) => {
+    const used = vocabTermUsed(item.term);
+    const selected = vocabQuizState.selectedTerm === item.term;
+    return `<div class="vocab-chip ${used?'used':''} ${selected?'selected':''}" draggable="${!used && !vocabQuizState.locked}" data-term="${escapeHtml(item.term)}">${escapeHtml(item.term)}</div>`;
+  }).join('');
+
+  list.innerHTML = VOCAB_ITEMS.map((item, idx) => {
+    const placed = vocabQuizState.placements[String(idx)] || '';
+    const statusClass = vocabQuizState.locked ? (placed === item.term ? 'correct' : 'incorrect') : '';
+    return `<div class="vocab-drop ${statusClass}" data-idx="${idx}">
+      <div class="def">${escapeHtml(item.def)}</div>
+      <div class="answer">${placed ? escapeHtml(placed) : 'Drop / tap a term here'}</div>
+    </div>`;
+  }).join('');
+
+  bank.querySelectorAll('.vocab-chip').forEach(chip => {
+    chip.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', chip.dataset.term);
+    });
+    chip.addEventListener('click', () => {
+      if(chip.classList.contains('used') || vocabQuizState.locked) return;
+      vocabQuizState.selectedTerm = vocabQuizState.selectedTerm === chip.dataset.term ? '' : chip.dataset.term;
+      renderVocabQuiz();
+    });
+  });
+
+  list.querySelectorAll('.vocab-drop').forEach(drop => {
+    drop.addEventListener('dragover', e => {
+      if(vocabQuizState.locked) return;
+      e.preventDefault();
+      drop.classList.add('dragover');
+    });
+    drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+    drop.addEventListener('drop', e => {
+      if(vocabQuizState.locked) return;
+      e.preventDefault();
+      drop.classList.remove('dragover');
+      const term = e.dataTransfer.getData('text/plain');
+      if(term) assignVocab(term, Number(drop.dataset.idx));
+    });
+    drop.addEventListener('click', () => {
+      if(vocabQuizState.locked) return;
+      const idx = String(drop.dataset.idx);
+      if(vocabQuizState.selectedTerm){
+        assignVocab(vocabQuizState.selectedTerm, Number(idx));
+      }else if(vocabQuizState.placements[idx]){
+        delete vocabQuizState.placements[idx];
+        renderVocabQuiz();
+        scheduleSave();
+      }
+    });
+  });
+
+  renderVocabFeedback();
+}
+
+function vocabCorrectCount(){
+  return VOCAB_ITEMS.filter((item, idx) => vocabQuizState.placements[String(idx)] === item.term).length;
+}
+
+function renderVocabFeedback(){
+  const el = document.getElementById('vocabQuizFeedback');
+  if(!el) return;
+  if(!vocabQuizState.attempts){
+    el.innerHTML = '';
+    return;
+  }
+  const correct = vocabCorrectCount();
+  if(vocabQuizState.locked && correct === VOCAB_ITEMS.length){
+    el.innerHTML = `<div class="sort-feedback good"><strong>${correct}/${VOCAB_ITEMS.length} correct.</strong> Vocabulary check complete.</div>`;
+  }else if(vocabQuizState.locked){
+    el.innerHTML = `<div class="sort-feedback warn"><strong>Final attempt: ${correct}/${VOCAB_ITEMS.length} correct.</strong> Review the highlighted matches above.</div>`;
+  }else{
+    el.innerHTML = `<div class="sort-feedback warn"><strong>${correct}/${VOCAB_ITEMS.length} correct.</strong> Reconsider your matches. Attempt ${vocabQuizState.attempts} of 3.</div>`;
+  }
+}
+
+function checkVocabQuiz(){
+  if(vocabQuizState.locked) return;
+  const placedCount = Object.keys(vocabQuizState.placements).length;
+  if(placedCount < VOCAB_ITEMS.length){
+    document.getElementById('vocabQuizFeedback').innerHTML = `<div class="sort-feedback warn">Match all ${VOCAB_ITEMS.length} terms before checking.</div>`;
+    return;
+  }
+  vocabQuizState.attempts += 1;
+  const correct = vocabCorrectCount();
+  if(correct === VOCAB_ITEMS.length){
+    vocabQuizState.locked = true;
+  }else if(vocabQuizState.attempts >= 3){
+    vocabQuizState.locked = true;
+  }
+  renderVocabQuiz();
+  scheduleSave();
+}
+
+function resetVocabQuiz(){
+  if(vocabQuizState.locked && !confirm('Reset the completed vocabulary check and try again?')) return;
+  vocabQuizState = {attempts:0, locked:false, placements:{}, selectedTerm:''};
+  renderVocabQuiz();
+  scheduleSave();
+}
+
 function fieldFilled(id){
   const el = document.getElementById(id);
   return el && safeText(el.value).trim().length > 0;
@@ -774,6 +956,7 @@ function fieldFilled(id){
 
 function groupComplete(group){
   if(group.special === 'sort') return Boolean(sortState.locked);
+  if(group.special === 'vocabquiz') return Boolean(vocabQuizState.locked);
   if(group.radio && !currentRadio(group.radio)) return false;
   return (group.ids || []).every(fieldFilled);
 }
@@ -918,7 +1101,10 @@ function buildPrintReport(emergency=false){
       ['Still need to investigate',valueFor('workingUnknown')]
     ])}
 
-    <h2>11. Closing Synthesis</h2>
+    <h2>11. Vocabulary Check</h2>
+    ${reportTable([['Status', vocabQuizState.locked ? `Complete (${vocabCorrectCount()}/${VOCAB_ITEMS.length} correct on final check; attempts: ${vocabQuizState.attempts})` : 'Incomplete']])}
+
+    <h2>12. Closing Synthesis</h2>
     ${reportTable([['Response',valueFor('closing')]])}
   `;
   document.getElementById('print-report').innerHTML = report;
@@ -952,6 +1138,8 @@ document.getElementById('changeIdBtn').addEventListener('click', changeId);
 document.getElementById('checkSortBtn').addEventListener('click', checkSort);
 document.getElementById('resetSortBtn').addEventListener('click', resetSort);
 document.getElementById('completionBtn').addEventListener('click', checkCompletion);
+document.getElementById('checkVocabBtn').addEventListener('click', checkVocabQuiz);
+document.getElementById('resetVocabBtn').addEventListener('click', resetVocabQuiz);
 document.getElementById('pdfBtn').addEventListener('click', () => printPdf(false));
 document.getElementById('emergencyPdfBtn').addEventListener('click', () => printPdf(true));
 
@@ -961,6 +1149,7 @@ document.querySelectorAll('[data-save]').forEach(el => {
 });
 
 renderSort();
+renderVocabQuiz();
 updateProgress();
 </script>
 </body>
