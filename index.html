@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Units 6–7, Day 1 — My Plan</title>
+<style>
+  :root{
+    --ink:#222; --muted:#626262; --paper:#fbfaf7; --panel:#eef2f6;
+    --accent:#1f3a5f; --accent2:#9a6b19; --good:#2f6b45; --warn:#9a5a16;
+    --bad:#9b3f37; --line:#d9d9d9; --soft:#f6f6f6;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Georgia,"Times New Roman",serif;max-width:980px;margin:0 auto;padding:20px;line-height:1.55;color:var(--ink);background:white}
+  h1,h2,h3,h4,button,label,.small-ui,.segment-tag,.status,.progress-text,th{font-family:Arial,Helvetica,sans-serif}
+  h1{font-size:1.8rem;color:var(--accent);margin-bottom:4px}
+  h2{font-size:1.25rem;color:var(--accent);border-bottom:2px solid var(--accent2);padding-bottom:5px;margin-top:2.2rem}
+  h3{font-size:1rem;color:var(--accent);margin-top:1.2rem}
+  .subtitle{font-family:Arial,sans-serif;color:var(--muted);margin-bottom:1rem}
+  .panel{background:var(--panel);border-left:4px solid var(--accent);padding:14px 16px;margin:12px 0;border-radius:4px}
+  .gold-panel{background:#fbf6e9;border-left:4px solid var(--accent2);padding:14px 16px;margin:12px 0;border-radius:4px}
+  .prompt{background:var(--paper);border-left:4px solid var(--accent2);padding:14px 16px;margin:10px 0}
+  .segment-tag{display:inline-block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;font-weight:bold;color:var(--accent2);background:#fbf6e9;border:1px solid #eadcb1;border-radius:10px;padding:2px 8px}
+  textarea,input[type=text],input[type=number],select{
+    width:100%;font:inherit;font-size:15px;padding:9px 10px;border:1px solid #cfcfcf;border-radius:4px;background:white
+  }
+  textarea{min-height:76px;resize:vertical}
+  textarea.big{min-height:118px}
+  input.short{max-width:380px}
+  button,.button-link{
+    display:inline-block;font-family:Arial,sans-serif;font-size:14px;padding:8px 13px;border:1px solid var(--accent);
+    color:var(--accent);background:white;border-radius:4px;cursor:pointer;text-decoration:none;margin:4px 6px 4px 0
+  }
+  button:hover,.button-link:hover{background:var(--accent);color:white}
+  button.primary{background:var(--accent);color:white}
+  button.good{border-color:var(--good);color:var(--good)}
+  button.good:hover{background:var(--good);color:white}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .small-ui{font-size:.86rem;color:var(--muted)}
+  .status{font-size:.82rem;color:var(--muted);margin-top:4px}
+  .status.good{color:var(--good)} .status.warn{color:var(--warn)} .status.bad{color:var(--bad)}
+  .id-gate{border:1px solid #cfd6dd;background:#f7f9fb;padding:16px;border-radius:6px;margin:14px 0}
+  .workspace.locked{opacity:.45;pointer-events:none;user-select:none}
+  .session-bar{display:none;background:#eef5ee;border:1px solid #cfe0cf;padding:10px 12px;border-radius:5px;margin:10px 0;font-family:Arial,sans-serif}
+  .progress-wrap{margin:12px 0;background:#e7e7e7;border-radius:8px;height:16px;overflow:hidden}
+  .progress-bar{height:100%;width:0;background:#5c7188;transition:width .2s}
+  .progress-text{font-size:.86rem;color:var(--muted)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .choice-card{border:1px solid var(--line);padding:12px;border-radius:6px;background:#fff}
+  .choice-card label{font-weight:bold}
+  .radio-row{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}
+  .radio-option{border:1px solid #ccc;border-radius:5px;padding:7px 9px;font-family:Arial,sans-serif}
+  table{width:100%;border-collapse:collapse;margin:10px 0}
+  th,td{border:1px solid #d8d8d8;padding:8px;vertical-align:top}
+  th{background:#f2f4f6;text-align:left;color:var(--accent);font-size:.9rem}
+  td:first-child{width:28%}
+  .sort-pool{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+  .sort-card{border:1px solid #d6d6d6;border-radius:6px;padding:10px;background:#fff}
+  .sort-card p{margin:0 0 8px}
+  .sort-buckets{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .bucket{border:1px solid #d4d4d4;border-radius:6px;padding:8px;background:#fafafa;min-height:86px}
+  .bucket h4{font-size:.85rem;margin:0 0 6px;color:var(--accent)}
+  .placed-card{font-family:Arial,sans-serif;font-size:.8rem;background:white;border:1px solid #ddd;padding:6px;border-radius:4px;margin:5px 0}
+  .sort-card select{font-family:Arial,sans-serif;font-size:.85rem}
+  .sort-feedback{font-family:Arial,sans-serif;padding:10px 12px;margin:10px 0;border-radius:5px}
+  .sort-feedback.good{background:#e8f4ea;color:#285c39}
+  .sort-feedback.warn{background:#fff3df;color:#7c4d12}
+  .sort-feedback.bad{background:#fae9e7;color:#7d342f}
+  .vocab{border-bottom:1px dotted var(--accent);cursor:help;position:relative;font-weight:bold}
+  .vocab:focus{outline:2px solid #9eb3cb;outline-offset:2px}
+  .vocab-tip{display:none;position:absolute;z-index:10;left:0;top:1.4em;width:260px;background:#222;color:white;padding:8px;border-radius:5px;font-family:Arial,sans-serif;font-size:.8rem;font-weight:normal}
+  .vocab:hover .vocab-tip,.vocab:focus .vocab-tip{display:block}
+  .checklist{font-family:Arial,sans-serif;font-size:.88rem}
+  .checklist div{padding:4px 0}
+  .check-ok{color:var(--good)} .check-no{color:var(--warn)}
+  .footer-actions{border-top:2px solid var(--accent);margin-top:30px;padding-top:14px}
+  .failsafe{margin-top:28px;padding-top:12px;border-top:1px dashed #aaa}
+  .privacy{font-family:Arial,sans-serif;font-size:.8rem;color:#666}
+  #print-report{display:none}
+  @media (max-width:760px){
+    .grid2,.grid3,.sort-pool,.sort-buckets{grid-template-columns:1fr}
+  }
+  @media print{
+    body.printing > *:not(#print-report){display:none!important}
+    #print-report{display:block!important}
+    #print-report table{font-size:10pt}
+    #print-report h1,#print-report h2{color:#000;border-color:#000}
+    #print-report .report-banner{padding:12px;border:2px solid #000;margin-bottom:12px;font-family:Arial,sans-serif}
+  }
+</style>
+</head>
+<body>
+<h1>Combined Units 6–7, Day 1: My Plan</h1>
+<div class="subtitle">What might I actually do after high school — and what would that path actually require?</div>
+
+<div class="gold-panel">
+  <strong>Today’s big idea:</strong> There is no single “best” post-high-school path. A strong plan fits the person, the goal, the requirements, the costs, and the likely outcomes — and it can change when better information appears.
+</div>
+
+<div class="id-gate" id="idGate">
+  <h3 style="margin-top:0">Start / Load Your Work</h3>
+  <p class="small-ui">Use your teacher-assigned code name — <strong>not your real name and not your email address.</strong> Your code is used only to reconnect you to your saved work.</p>
+  <label for="studentId">Assigned code name</label>
+  <input id="studentId" class="short" type="text" autocomplete="off" placeholder="Example: Falcon217">
+  <div>
+    <button class="primary" id="startBtn" type="button">Start / Load My Work</button>
+  </div>
+  <div id="gateStatus" class="status"></div>
+</div>
+
+<div class="session-bar" id="sessionBar">
+  Working as <strong id="sessionIdDisplay"></strong>
+  <button type="button" id="saveNowBtn">Save now</button>
+  <button type="button" id="changeIdBtn">Change code</button>
+  <span id="saveStatus" class="status"></span>
+</div>
+
+<div class="panel">
+  <strong>How this page works</strong>
+  <ol class="small-ui">
+    <li>Start with your assigned code name. Your work saves in this browser and, when available, to the class cloud sheet.</li>
+    <li>Work through each section as the class reaches it. Do not skip ahead during live movement activities.</li>
+    <li>At the end, click <strong>Check Completion</strong>. This is a completion report — not an AI score.</li>
+    <li>Click <strong>Save / Print PDF</strong> and save the report as a PDF for submission if your teacher asks.</li>
+  </ol>
+</div>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div class="progress-text" id="progressText">Completion: 0%</div>
+
+<main id="workspace" class="workspace locked">
+
+<h2>1. Do Now</h2>
+<span class="segment-tag">Independent start</span>
+<div class="prompt">
+  Two students graduate this year. One goes to a four-year college. The other starts a paid apprenticeship.
+  <strong>Who made the better choice?</strong> Explain what you would need to know before you could decide.
+</div>
+<textarea id="doNow" data-save placeholder="Write your first thinking here..."></textarea>
+
+<h2>2. Watch: A Different Route</h2>
+<span class="segment-tag">PBS NewsHour · 6:02</span>
+<div class="panel">
+  <strong>Why Gen Z is ditching college for training in skilled trades</strong><br>
+  <a class="button-link" href="https://www.pbs.org/video/toolbelt-generation-1742066670/" target="_blank" rel="noopener">Open PBS video</a>
+  <div class="small-ui">Watch with the class, then answer the two short questions below.</div>
+</div>
+<label for="videoQ1">What is one reason someone in the video chose skilled-trade training instead of a traditional four-year path?</label>
+<textarea id="videoQ1" data-save></textarea>
+<label for="videoQ2">What would you still need to know before deciding whether that path was a good financial choice for that person?</label>
+<textarea id="videoQ2" data-save></textarea>
+
+<h2>3. O*NET Interest Profiler</h2>
+<span class="segment-tag">Ideas, not a verdict</span>
+<div class="gold-panel">
+  This is <strong>not</strong> an aptitude test and it does not decide what you should do. Use it to surface possibilities worth investigating. You are allowed to disagree with the results.
+</div>
+<a class="button-link" href="https://onetinterestprofiler.org/" target="_blank" rel="noopener">Open O*NET Interest Profiler</a>
+<div class="grid2">
+  <div>
+    <label for="onetInterests">My top interest areas</label>
+    <textarea id="onetInterests" data-save placeholder="Example: Realistic, Social..."></textarea>
+  </div>
+  <div>
+    <label for="onetCareers">Two careers suggested that seem worth investigating</label>
+    <textarea id="onetCareers" data-save></textarea>
+  </div>
+</div>
+<label for="onetDisagree">One result I disagree with, would not pursue, or want to question</label>
+<textarea id="onetDisagree" data-save></textarea>
+<label for="existingCareer">Optional: A career I already had in mind</label>
+<textarea id="existingCareer" data-save data-optional></textarea>
+
+<h2>4. MOVE: What Matters Most?</h2>
+<span class="segment-tag">Stand up · move · discuss</span>
+<div class="prompt">
+  Move to the corner that best represents what matters most to you <em>right now</em> when choosing a career path:
+  <strong>Money · Time/Training · Interest/Enjoyment · Job Availability/Stability</strong>
+</div>
+<div class="panel small-ui"><strong>Leave your device at your seat.</strong> After the discussion, return here and record what you chose and whether anything you heard changed your thinking.</div>
+<label for="moveReflection">Which corner did you choose, and did anything you heard make you reconsider or add another factor?</label>
+<textarea id="moveReflection" data-save></textarea>
+
+<h2>5. The $50K vs. $120K Choice</h2>
+<span class="segment-tag">Discover before naming</span>
+<div class="prompt">
+  Imagine you could choose between:
+  <br><strong>A.</strong> Doing your favorite hobby or an activity you genuinely love as your job for <strong>$50,000 per year</strong>
+  <br><strong>B.</strong> Working in an office job you do not particularly enjoy for <strong>$120,000 per year</strong>
+  <br><br><strong>Which would you choose?</strong>
+</div>
+<div class="radio-row">
+  <label class="radio-option"><input type="radio" name="hobbyChoice" value="50K hobby" data-save> $50K doing something I love</label>
+  <label class="radio-option"><input type="radio" name="hobbyChoice" value="120K office" data-save> $120K office job</label>
+</div>
+<label for="hobbyWhy">Why?</label>
+<textarea id="hobbyWhy" data-save></textarea>
+
+<div class="panel">
+  <strong>Now name the idea:</strong>
+  <span class="vocab" tabindex="0">psychic income<span class="vocab-tip">The non-money satisfaction or value a person receives from work or an activity — such as enjoyment, purpose, status, flexibility, or pride.</span></span>
+  is the non-money value you get from a choice. A higher paycheck can matter a lot, but it is not the only kind of value.
+</div>
+<label for="psychicIncome">Why might a person rationally choose the $50,000 option even though it pays $70,000 less?</label>
+<textarea id="psychicIncome" data-save></textarea>
+
+<h2>6. Digital Pathway Sort</h2>
+<span class="segment-tag">Self-checking · no AI</span>
+<div class="prompt">
+  Sort each situation by the <strong>primary preparation route being described</strong>. Use what the scenario says — not assumptions about the occupation.
+</div>
+
+<div class="sort-pool" id="sortPool"></div>
+<button type="button" id="checkSortBtn">Check my sort</button>
+<button type="button" id="resetSortBtn">Reset sort</button>
+<div id="sortFeedback"></div>
+
+<div class="panel">
+  <strong>Names for patterns you just sorted:</strong>
+  <div class="grid2">
+    <div>
+      <p><span class="vocab" tabindex="0">Apprenticeship<span class="vocab-tip">A structured program combining paid, supervised work with related instruction.</span></span> — paid work plus structured training.</p>
+      <p><span class="vocab" tabindex="0">Certificate<span class="vocab-tip">A document showing completion of a focused education or training program.</span></span> — completion of a focused program.</p>
+      <p><span class="vocab" tabindex="0">Credential<span class="vocab-tip">Evidence that a person has met a defined standard of knowledge or skill. Certifications and licenses are examples.</span></span> — proof of a qualification or skill standard.</p>
+    </div>
+    <div>
+      <p><span class="vocab" tabindex="0">Degree<span class="vocab-tip">An academic award earned after completing a college program, such as an associate or bachelor's degree.</span></span> — an academic qualification from a college program.</p>
+      <p><span class="vocab" tabindex="0">License<span class="vocab-tip">Legal permission from a government authority to practice certain occupations or activities.</span></span> — legal authorization to do certain work.</p>
+      <p><span class="vocab" tabindex="0">Employer training<span class="vocab-tip">Training provided by an employer after or as part of being hired.</span></span> — skills learned through company-provided instruction and supervised work.</p>
+    </div>
+  </div>
+  <p><strong>Important:</strong> these can overlap. A career may require a degree <em>and</em> a license, or training <em>and</em> an industry credential.</p>
+</div>
+
+<h2>7. Explore Two Possibilities</h2>
+<span class="segment-tag">Use reliable sources</span>
+<div class="panel small-ui">
+  Use reliable career information. Good starting points:
+  <a href="https://www.mynextmove.org/" target="_blank" rel="noopener">My Next Move / O*NET</a> ·
+  <a href="https://www.bls.gov/ooh/" target="_blank" rel="noopener">BLS Occupational Outlook Handbook</a>
+</div>
+
+<table>
+  <thead><tr><th>Question</th><th>Career / Path A</th><th>Career / Path B</th></tr></thead>
+  <tbody>
+    <tr><td>Career / job title</td><td><input id="aTitle" type="text" data-save></td><td><input id="bTitle" type="text" data-save></td></tr>
+    <tr><td>What does the work actually involve?</td><td><textarea id="aWork" data-save></textarea></td><td><textarea id="bWork" data-save></textarea></td></tr>
+    <tr><td>Education or training usually required</td><td><textarea id="aTraining" data-save></textarea></td><td><textarea id="bTraining" data-save></textarea></td></tr>
+    <tr><td>Credential or license required?</td><td><textarea id="aCredential" data-save></textarea></td><td><textarea id="bCredential" data-save></textarea></td></tr>
+    <tr><td>Approximate preparation time</td><td><input id="aTime" type="text" data-save></td><td><input id="bTime" type="text" data-save></td></tr>
+    <tr><td>Typical starting / early-career pay</td><td><input id="aPay" type="text" data-save></td><td><input id="bPay" type="text" data-save></td></tr>
+    <tr><td>What appeals to me?</td><td><textarea id="aAppeal" data-save></textarea></td><td><textarea id="bAppeal" data-save></textarea></td></tr>
+    <tr><td>What gives me pause?</td><td><textarea id="aConcern" data-save></textarea></td><td><textarea id="bConcern" data-save></textarea></td></tr>
+  </tbody>
+</table>
+
+<h2>8. Opportunity Cost + Intro to ROI</h2>
+<span class="segment-tag">Name the tradeoff</span>
+<div class="panel">
+  <p><span class="vocab" tabindex="0">Opportunity cost<span class="vocab-tip">The value of the next-best alternative you give up when you make a choice.</span></span> asks: <strong>What am I giving up by choosing this?</strong></p>
+  <p><span class="vocab" tabindex="0">Return on investment (ROI)<span class="vocab-tip">A way to compare what you put into a choice with the financial value or benefits you may get back.</span></span> asks: <strong>What am I putting in, and what might I get back?</strong></p>
+  <p>For this unit, ROI is one lens — not a rule that says “always choose the highest salary.” Time, cost, risk, job opportunities, and psychic income all matter.</p>
+</div>
+
+<div class="grid2">
+  <div class="choice-card">
+    <h3>Path A</h3>
+    <p>4 years of preparation · $45,000 total cost · $62,000 expected starting salary · work that interests you a lot</p>
+  </div>
+  <div class="choice-card">
+    <h3>Path B</h3>
+    <p>1 year of preparation · $8,000 total cost · $50,000 expected starting salary · work that interests you less</p>
+  </div>
+</div>
+
+<label for="oppCost">What is one important opportunity cost of choosing Path A instead of Path B?</label>
+<textarea id="oppCost" data-save></textarea>
+<label for="roiThinking">What else would you want to know before deciding which path gives the better overall return for you?</label>
+<textarea id="roiThinking" data-save></textarea>
+
+<h2>9. My Working Path</h2>
+<span class="segment-tag">For this unit — not forever</span>
+<div class="gold-panel"><strong>This is a working choice, not a permanent commitment.</strong> You may change it as you learn more in later lessons.</div>
+<label for="workingPath">Career / pathway I currently want to investigate</label>
+<input id="workingPath" type="text" data-save>
+<div class="grid2">
+  <div>
+    <label for="workingWhy">Why it interests me</label>
+    <textarea id="workingWhy" data-save></textarea>
+  </div>
+  <div>
+    <label for="workingPrep">Education / training I currently think it requires</label>
+    <textarea id="workingPrep" data-save></textarea>
+  </div>
+  <div>
+    <label for="workingTime">Approximate preparation time</label>
+    <input id="workingTime" type="text" data-save>
+  </div>
+  <div>
+    <label for="workingPay">Approximate early-career income</label>
+    <input id="workingPay" type="text" data-save>
+  </div>
+</div>
+<label for="workingUnknown">One thing I still need to investigate</label>
+<textarea id="workingUnknown" data-save></textarea>
+
+<h2>10. Closing Synthesis</h2>
+<span class="segment-tag">Independent · no AI</span>
+<div class="prompt">
+  A friend tells you: <strong>“Just choose whichever career pays the most.”</strong>
+  Based on today’s activities, explain why that is not enough information to make a good career decision.
+</div>
+<textarea id="closing" class="big" data-save placeholder="A strong response can be 2–3 sentences if it is specific."></textarea>
+
+<div class="footer-actions">
+  <h2 style="margin-top:0">Finish Today</h2>
+  <button class="primary" type="button" id="completionBtn">Check Completion</button>
+  <button class="good" type="button" id="pdfBtn">Save / Print PDF</button>
+  <div id="completionReport" class="checklist"></div>
+  <p class="privacy">Completion is calculated by the page from whether required sections are filled in. No student writing is sent to an AI service.</p>
+</div>
+
+<div class="failsafe">
+  <details>
+    <summary class="small-ui"><strong>Emergency backup if saving or submission is having trouble</strong></summary>
+    <p class="small-ui">Your browser keeps a local copy after you start with your code name. If cloud saving is unavailable, you can still make a printable record of the work currently on this screen.</p>
+    <button type="button" id="emergencyPdfBtn">Emergency PDF / Print Record</button>
+  </details>
+</div>
+
+</main>
+
+<div id="print-report"></div>
+
+<script>
+/* ============================================================
+   CONFIGURATION
+   1) Deploy the paired Apps Script as a Web App.
+   2) Paste its /exec URL below.
+   3) SHARED_SECRET must match Code.gs.
+   ============================================================ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoTmKvsQLT6LkAuqU-dBymxWdDTRPPSUhj6Ft9U5eDTmhghzzddOwm4ObeuRvBC-iu/exec';
+const SHARED_SECRET = 'u67-day1-pathways-2026';
+const ASSIGNMENT_KEY = 'u67-day1-my-plan-v1';
+
+let lockedStudentId = '';
+let autosaveTimer = null;
+let cloudSaveInFlight = false;
+let cloudSaveQueued = false;
+let submittedAt = '';
+let lastCompletion = null;
+
+const SORT_BUCKETS = [
+  {key:'workclass', label:'Paid work + related classroom training'},
+  {key:'short', label:'Short focused training / skill credential'},
+  {key:'degree', label:'College degree route'},
+  {key:'employer', label:'Employer / on-the-job training'}
+];
+
+const SORT_CARDS = [
+  {id:'s1', text:'You are hired by an electrical contractor. Over several years, you complete paid supervised work plus required classroom instruction.', answer:'workclass'},
+  {id:'s2', text:'You complete a 9-month welding program and then earn an industry certification that verifies your skill.', answer:'short'},
+  {id:'s3', text:'You complete a four-year accounting program before applying for entry-level accountant positions.', answer:'degree'},
+  {id:'s4', text:'A company hires you as an insurance claims trainee and provides several weeks of formal instruction plus supervised practice.', answer:'employer'},
+  {id:'s5', text:'You enter a plumbing program where you earn wages on job sites while also completing scheduled technical instruction.', answer:'workclass'},
+  {id:'s6', text:'You finish a one-semester pharmacy technician training program and prepare for a recognized certification exam.', answer:'short'},
+  {id:'s7', text:'You complete an associate degree in dental hygiene and then complete the state steps required to practice.', answer:'degree'},
+  {id:'s8', text:'A manufacturer hires you into an entry-level production role and teaches the company’s equipment and procedures after you start.', answer:'employer'},
+  {id:'s9', text:'You join a structured HVAC program that combines paid field experience with technical classes over multiple years.', answer:'workclass'},
+  {id:'s10', text:'You complete a focused cybersecurity certificate program to document a specific set of job-related skills.', answer:'short'},
+  {id:'s11', text:'You complete a bachelor’s degree in elementary education before completing the state’s teacher licensure steps.', answer:'degree'},
+  {id:'s12', text:'A bank hires you as a teller and trains you on its systems, security procedures, and customer-service standards.', answer:'employer'}
+];
+
+let sortState = {
+  attempts: 0,
+  locked: false,
+  assignments: {}
+};
+
+const REQUIRED_GROUPS = [
+  {name:'Do Now', ids:['doNow']},
+  {name:'PBS video reflection', ids:['videoQ1','videoQ2']},
+  {name:'O*NET profiler reflection', ids:['onetInterests','onetCareers','onetDisagree']},
+  {name:'MOVE reflection', ids:['moveReflection']},
+  {name:'Psychic income choice', ids:['hobbyWhy','psychicIncome'], radio:'hobbyChoice'},
+  {name:'Pathway sort', special:'sort'},
+  {name:'Career / Path A research', ids:['aTitle','aWork','aTraining','aCredential','aTime','aPay','aAppeal','aConcern']},
+  {name:'Career / Path B research', ids:['bTitle','bWork','bTraining','bCredential','bTime','bPay','bAppeal','bConcern']},
+  {name:'Opportunity cost + ROI', ids:['oppCost','roiThinking']},
+  {name:'Working path', ids:['workingPath','workingWhy','workingPrep','workingTime','workingPay','workingUnknown']},
+  {name:'Closing synthesis', ids:['closing']}
+];
+
+function normId(id){
+  return String(id || '').trim().toLowerCase();
+}
+
+function safeText(v){
+  return String(v ?? '');
+}
+
+function localKey(){
+  return lockedStudentId ? `${ASSIGNMENT_KEY}::${normId(lockedStudentId)}` : '';
+}
+
+function webAppConfigured(){
+  return WEB_APP_URL.startsWith('https://script.google.com/macros/s/') && WEB_APP_URL.endsWith('/exec');
+}
+
+function escapeHtml(str){
+  return safeText(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function currentRadio(name){
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '';
+}
+
+function collectState(){
+  if(!lockedStudentId) return null;
+  const fields = {};
+  document.querySelectorAll('[data-save]').forEach(el => {
+    if(el.type === 'radio'){
+      if(el.checked) fields[el.name] = el.value;
+    } else {
+      fields[el.id] = el.value;
+    }
+  });
+  fields.hobbyChoice = currentRadio('hobbyChoice');
+
+  return {
+    assignmentKey: ASSIGNMENT_KEY,
+    studentId: lockedStudentId,
+    updatedAtClient: new Date().toISOString(),
+    submittedAt,
+    fields,
+    sortState,
+    completion: computeCompletion()
+  };
+}
+
+function applyState(state){
+  if(!state) return;
+  const fields = state.fields || {};
+  Object.entries(fields).forEach(([key,val]) => {
+    const el = document.getElementById(key);
+    if(el && el.type !== 'radio'){
+      el.value = safeText(val);
+      return;
+    }
+    const radio = document.querySelector(`input[name="${key}"][value="${CSS.escape(safeText(val))}"]`);
+    if(radio) radio.checked = true;
+  });
+  if(state.sortState){
+    sortState = {
+      attempts: Number(state.sortState.attempts || 0),
+      locked: Boolean(state.sortState.locked),
+      assignments: state.sortState.assignments || {}
+    };
+  }
+  submittedAt = state.submittedAt || '';
+  renderSort();
+  updateProgress();
+}
+
+function saveLocal(){
+  if(!lockedStudentId) return false;
+  try{
+    const state = collectState();
+    localStorage.setItem(localKey(), JSON.stringify(state));
+    setSaveStatus('Saved locally', 'good');
+    return true;
+  }catch(err){
+    setSaveStatus('Local save failed in this browser', 'bad');
+    return false;
+  }
+}
+
+function loadLocalFor(id){
+  try{
+    const key = `${ASSIGNMENT_KEY}::${normId(id)}`;
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  }catch(err){
+    return null;
+  }
+}
+
+async function callBackend(action, payload={}, opts={}){
+  if(!webAppConfigured()) throw new Error('Cloud save is not configured yet.');
+  const body = Object.assign({
+    action,
+    secret: SHARED_SECRET,
+    assignmentKey: ASSIGNMENT_KEY,
+    studentId: lockedStudentId
+  }, payload || {});
+
+  const maxAttempts = opts.attempts || 3;
+  let lastErr = null;
+  for(let attempt=1; attempt<=maxAttempts; attempt++){
+    try{
+      const res = await fetch(WEB_APP_URL, {
+        method:'POST',
+        body:JSON.stringify(body)
+      });
+      const txt = await res.text();
+      let data;
+      try{ data = JSON.parse(txt); }
+      catch(e){ throw new Error('Cloud returned a non-JSON response.'); }
+      if(!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+      return data;
+    }catch(err){
+      lastErr = err;
+      if(attempt < maxAttempts){
+        await new Promise(r => setTimeout(r, 650 * attempt + Math.floor(Math.random()*250)));
+      }
+    }
+  }
+  throw lastErr || new Error('Cloud request failed.');
+}
+
+async function saveCloud(){
+  if(!lockedStudentId || !webAppConfigured()) return;
+  if(cloudSaveInFlight){
+    cloudSaveQueued = true;
+    return;
+  }
+  cloudSaveInFlight = true;
+  try{
+    setSaveStatus('Saving locally + cloud…','');
+    await callBackend('save_state', {state:collectState()}, {attempts:4});
+    setSaveStatus('Saved locally + cloud','good');
+  }catch(err){
+    setSaveStatus('Saved locally; cloud will retry later','warn');
+  }finally{
+    cloudSaveInFlight = false;
+    if(cloudSaveQueued){
+      cloudSaveQueued = false;
+      saveCloud();
+    }
+  }
+}
+
+function scheduleSave(){
+  if(!lockedStudentId) return;
+  saveLocal();
+  updateProgress();
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(saveCloud, 900);
+}
+
+function setSaveStatus(msg, cls=''){
+  const el = document.getElementById('saveStatus');
+  el.textContent = msg;
+  el.className = `status ${cls}`.trim();
+}
+
+async function startSession(){
+  const input = document.getElementById('studentId');
+  const raw = input.value.trim();
+  const status = document.getElementById('gateStatus');
+
+  if(raw.length < 3){
+    status.textContent = 'Enter your complete assigned code name.';
+    status.className = 'status bad';
+    return;
+  }
+  if(raw.includes('@')){
+    status.textContent = 'Use your assigned code name, not an email address.';
+    status.className = 'status bad';
+    return;
+  }
+
+  lockedStudentId = raw;
+  status.textContent = 'Loading saved work…';
+  status.className = 'status';
+
+  let chosenState = loadLocalFor(raw);
+  let cloudState = null;
+
+  if(webAppConfigured()){
+    try{
+      const data = await callBackend('load_state', {}, {attempts:3});
+      cloudState = data && data.state ? data.state : null;
+    }catch(err){
+      // Local load still works.
+    }
+  }
+
+  if(cloudState && (!chosenState || new Date(cloudState.updatedAtClient || 0) > new Date(chosenState.updatedAtClient || 0))){
+    chosenState = cloudState;
+  }
+
+  document.getElementById('workspace').classList.remove('locked');
+  document.getElementById('sessionBar').style.display = 'block';
+  document.getElementById('sessionIdDisplay').textContent = raw;
+  input.disabled = true;
+  document.getElementById('startBtn').disabled = true;
+
+  if(chosenState) applyState(chosenState);
+  renderSort();
+  updateProgress();
+  saveLocal();
+  if(webAppConfigured()) saveCloud();
+
+  status.textContent = chosenState ? 'Saved work loaded.' : 'New session started.';
+  status.className = 'status good';
+}
+
+function changeId(){
+  if(!confirm('Change student code? Make sure your current work is saved first.')) return;
+  saveLocal();
+  lockedStudentId = '';
+  clearTimeout(autosaveTimer);
+  document.getElementById('workspace').classList.add('locked');
+  document.getElementById('sessionBar').style.display = 'none';
+  const input = document.getElementById('studentId');
+  input.disabled = false;
+  input.value = '';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('gateStatus').textContent = '';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function buildSort(){
+  const pool = document.getElementById('sortPool');
+  pool.innerHTML = '';
+  SORT_CARDS.forEach(card => {
+    const wrap = document.createElement('div');
+    wrap.className = 'sort-card';
+    wrap.innerHTML = `<p>${escapeHtml(card.text)}</p>`;
+    const sel = document.createElement('select');
+    sel.id = `sort-${card.id}`;
+    sel.dataset.cardId = card.id;
+    sel.innerHTML = `<option value="">Choose a route…</option>` +
+      SORT_BUCKETS.map(b => `<option value="${b.key}">${escapeHtml(b.label)}</option>`).join('');
+    sel.value = sortState.assignments[card.id] || '';
+    sel.disabled = sortState.locked;
+    sel.addEventListener('change', () => {
+      sortState.assignments[card.id] = sel.value;
+      renderSortBuckets();
+      scheduleSave();
+    });
+    wrap.appendChild(sel);
+    pool.appendChild(wrap);
+  });
+  renderSortBuckets();
+  renderSortFeedback();
+}
+
+function renderSort(){
+  buildSort();
+}
+
+function renderSortBuckets(){
+  let holder = document.getElementById('sortBucketHolder');
+  if(!holder){
+    holder = document.createElement('div');
+    holder.id = 'sortBucketHolder';
+    holder.className = 'sort-buckets';
+    document.getElementById('sortPool').insertAdjacentElement('afterend', holder);
+  }
+  holder.innerHTML = SORT_BUCKETS.map(b => {
+    const cards = SORT_CARDS.filter(c => sortState.assignments[c.id] === b.key);
+    return `<div class="bucket"><h4>${escapeHtml(b.label)}</h4>${
+      cards.length ? cards.map(c => `<div class="placed-card">${escapeHtml(c.text)}</div>`).join('') :
+      '<div class="small-ui">No cards yet</div>'
+    }</div>`;
+  }).join('');
+}
+
+function sortCorrectCount(){
+  return SORT_CARDS.filter(c => sortState.assignments[c.id] === c.answer).length;
+}
+
+function checkSort(){
+  if(sortState.locked) return;
+  const assigned = SORT_CARDS.filter(c => sortState.assignments[c.id]).length;
+  if(assigned < SORT_CARDS.length){
+    document.getElementById('sortFeedback').innerHTML = `<div class="sort-feedback warn">Place all ${SORT_CARDS.length} cards before checking.</div>`;
+    return;
+  }
+
+  sortState.attempts += 1;
+  const correct = sortCorrectCount();
+
+  if(correct === SORT_CARDS.length){
+    sortState.locked = true;
+    document.getElementById('sortFeedback').innerHTML = `<div class="sort-feedback good"><strong>${correct}/${SORT_CARDS.length} correct.</strong> Nice work — the sort is complete.</div>`;
+  }else if(sortState.attempts < 3){
+    document.getElementById('sortFeedback').innerHTML = `<div class="sort-feedback warn"><strong>${correct}/${SORT_CARDS.length} correct.</strong> Reconsider your placements. Specific answers are not revealed yet. Attempt ${sortState.attempts} of 3.</div>`;
+  }else{
+    sortState.locked = true;
+    const rows = SORT_CARDS.map(c => {
+      const bucket = SORT_BUCKETS.find(b => b.key === c.answer);
+      return `<li>${escapeHtml(c.text)} <strong>→ ${escapeHtml(bucket.label)}</strong></li>`;
+    }).join('');
+    document.getElementById('sortFeedback').innerHTML =
+      `<div class="sort-feedback bad"><strong>Final attempt: ${correct}/${SORT_CARDS.length} correct.</strong> Review the correct routes below.<ul>${rows}</ul></div>`;
+  }
+  renderSort();
+  scheduleSave();
+}
+
+function renderSortFeedback(){
+  const el = document.getElementById('sortFeedback');
+  if(!sortState.attempts){
+    el.innerHTML = '';
+    return;
+  }
+  const correct = sortCorrectCount();
+  if(sortState.locked && correct === SORT_CARDS.length){
+    el.innerHTML = `<div class="sort-feedback good"><strong>${correct}/${SORT_CARDS.length} correct.</strong> Sort complete.</div>`;
+  }else if(sortState.locked){
+    el.innerHTML = `<div class="sort-feedback warn">Sort completed after the final reveal. Review the route names above before moving on.</div>`;
+  }else{
+    el.innerHTML = `<div class="sort-feedback warn"><strong>${correct}/${SORT_CARDS.length} correct.</strong> Attempt ${sortState.attempts} of 3.</div>`;
+  }
+}
+
+function resetSort(){
+  if(sortState.locked && !confirm('Reset the completed sort and try again?')) return;
+  sortState = {attempts:0, locked:false, assignments:{}};
+  renderSort();
+  scheduleSave();
+}
+
+function fieldFilled(id){
+  const el = document.getElementById(id);
+  return el && safeText(el.value).trim().length > 0;
+}
+
+function groupComplete(group){
+  if(group.special === 'sort') return Boolean(sortState.locked);
+  if(group.radio && !currentRadio(group.radio)) return false;
+  return (group.ids || []).every(fieldFilled);
+}
+
+function computeCompletion(){
+  const detail = REQUIRED_GROUPS.map(g => ({name:g.name, complete:groupComplete(g)}));
+  const completeCount = detail.filter(x => x.complete).length;
+  const percent = Math.round((completeCount / detail.length) * 100);
+  return {percent, completeCount, total:detail.length, detail};
+}
+
+function updateProgress(){
+  const c = computeCompletion();
+  document.getElementById('progressBar').style.width = `${c.percent}%`;
+  document.getElementById('progressText').textContent = `Completion: ${c.percent}% (${c.completeCount}/${c.total} sections)`;
+  return c;
+}
+
+function renderCompletion(){
+  lastCompletion = computeCompletion();
+  const html = [
+    `<p><strong>Completion: ${lastCompletion.percent}%</strong> — ${lastCompletion.completeCount} of ${lastCompletion.total} required sections complete.</p>`,
+    ...lastCompletion.detail.map(d => `<div class="${d.complete?'check-ok':'check-no'}">${d.complete?'✓':'○'} ${escapeHtml(d.name)}</div>`)
+  ].join('');
+  document.getElementById('completionReport').innerHTML = html;
+  return lastCompletion;
+}
+
+async function checkCompletion(){
+  const c = renderCompletion();
+  submittedAt = new Date().toISOString();
+  saveLocal();
+  if(webAppConfigured()){
+    try{
+      await callBackend('submit_state', {state:collectState(), completion:c}, {attempts:4});
+      setSaveStatus('Completion report saved locally + cloud','good');
+    }catch(err){
+      setSaveStatus('Completion report saved locally; cloud submission did not finish','warn');
+    }
+  }
+  return c;
+}
+
+function valueFor(id){
+  const el = document.getElementById(id);
+  return el ? safeText(el.value).trim() : '';
+}
+
+function reportTable(rows){
+  return `<table><tbody>${rows.map(([a,b]) => `<tr><th>${escapeHtml(a)}</th><td>${escapeHtml(b).replace(/\n/g,'<br>')}</td></tr>`).join('')}</tbody></table>`;
+}
+
+function buildPrintReport(emergency=false){
+  const c = computeCompletion();
+  const sortStatus = sortState.locked ? `Complete (${sortCorrectCount()}/${SORT_CARDS.length} correct before/at lock; attempts: ${sortState.attempts})` : 'Incomplete';
+
+  const report = `
+    <h1>Combined Units 6–7, Day 1 — My Plan</h1>
+    <div class="report-banner">
+      <strong>Student code:</strong> ${escapeHtml(lockedStudentId || '(not started)')}<br>
+      <strong>Completion:</strong> ${c.percent}% (${c.completeCount}/${c.total} required sections)<br>
+      <strong>Record type:</strong> ${emergency ? 'Emergency local record' : 'Completion record'}<br>
+      <strong>Generated:</strong> ${escapeHtml(new Date().toLocaleString())}
+    </div>
+    <h2>Completion Checklist</h2>
+    <div class="checklist">${c.detail.map(d => `<div>${d.complete?'✓':'○'} ${escapeHtml(d.name)}</div>`).join('')}</div>
+
+    <h2>1. Do Now</h2>
+    ${reportTable([['Response',valueFor('doNow')]])}
+
+    <h2>2. PBS Video Reflection</h2>
+    ${reportTable([['Reason from video',valueFor('videoQ1')],['What else would you need to know?',valueFor('videoQ2')]])}
+
+    <h2>3. O*NET Interest Profiler</h2>
+    ${reportTable([
+      ['Top interest areas',valueFor('onetInterests')],
+      ['Careers worth investigating',valueFor('onetCareers')],
+      ['Result I question/disagree with',valueFor('onetDisagree')],
+      ['Career I already had in mind',valueFor('existingCareer')]
+    ])}
+
+    <h2>4. MOVE Reflection</h2>
+    ${reportTable([['Reflection',valueFor('moveReflection')]])}
+
+    <h2>5. Psychic Income</h2>
+    ${reportTable([
+      ['Choice',currentRadio('hobbyChoice')],
+      ['Why?',valueFor('hobbyWhy')],
+      ['Why the lower-paying choice can still be rational',valueFor('psychicIncome')]
+    ])}
+
+    <h2>6. Pathway Sort</h2>
+    ${reportTable([['Status',sortStatus]])}
+
+    <h2>7. Career Exploration</h2>
+    <table>
+      <thead><tr><th>Question</th><th>Career / Path A</th><th>Career / Path B</th></tr></thead>
+      <tbody>
+        ${[
+          ['Career / job title','aTitle','bTitle'],
+          ['What the work involves','aWork','bWork'],
+          ['Education / training','aTraining','bTraining'],
+          ['Credential / license','aCredential','bCredential'],
+          ['Preparation time','aTime','bTime'],
+          ['Starting / early-career pay','aPay','bPay'],
+          ['What appeals to me','aAppeal','bAppeal'],
+          ['What gives me pause','aConcern','bConcern']
+        ].map(r => `<tr><th>${escapeHtml(r[0])}</th><td>${escapeHtml(valueFor(r[1])).replace(/\n/g,'<br>')}</td><td>${escapeHtml(valueFor(r[2])).replace(/\n/g,'<br>')}</td></tr>`).join('')}
+      </tbody>
+    </table>
+
+    <h2>8. Opportunity Cost + ROI</h2>
+    ${reportTable([
+      ['Opportunity cost',valueFor('oppCost')],
+      ['What else I would want to know',valueFor('roiThinking')]
+    ])}
+
+    <h2>9. My Working Path</h2>
+    ${reportTable([
+      ['Working path',valueFor('workingPath')],
+      ['Why it interests me',valueFor('workingWhy')],
+      ['Preparation required',valueFor('workingPrep')],
+      ['Preparation time',valueFor('workingTime')],
+      ['Early-career income',valueFor('workingPay')],
+      ['Still need to investigate',valueFor('workingUnknown')]
+    ])}
+
+    <h2>10. Closing Synthesis</h2>
+    ${reportTable([['Response',valueFor('closing')]])}
+  `;
+  document.getElementById('print-report').innerHTML = report;
+}
+
+async function printPdf(emergency=false){
+  if(!lockedStudentId){
+    alert('Start / Load your work with your assigned code name first.');
+    return;
+  }
+  if(!emergency) await checkCompletion();
+  else saveLocal();
+  buildPrintReport(emergency);
+  document.body.classList.add('printing');
+  setTimeout(() => window.print(), 100);
+}
+
+window.addEventListener('afterprint', () => {
+  document.body.classList.remove('printing');
+});
+
+document.getElementById('startBtn').addEventListener('click', startSession);
+document.getElementById('studentId').addEventListener('keydown', e => {
+  if(e.key === 'Enter') startSession();
+});
+document.getElementById('saveNowBtn').addEventListener('click', () => {
+  saveLocal();
+  saveCloud();
+});
+document.getElementById('changeIdBtn').addEventListener('click', changeId);
+document.getElementById('checkSortBtn').addEventListener('click', checkSort);
+document.getElementById('resetSortBtn').addEventListener('click', resetSort);
+document.getElementById('completionBtn').addEventListener('click', checkCompletion);
+document.getElementById('pdfBtn').addEventListener('click', () => printPdf(false));
+document.getElementById('emergencyPdfBtn').addEventListener('click', () => printPdf(true));
+
+document.querySelectorAll('[data-save]').forEach(el => {
+  const evt = (el.type === 'radio' || el.tagName === 'SELECT') ? 'change' : 'input';
+  el.addEventListener(evt, scheduleSave);
+});
+
+renderSort();
+updateProgress();
+</script>
+</body>
+</html>
