@@ -172,6 +172,23 @@
 <label for="existingCareer">Optional: A career I already had in mind</label>
 <textarea id="existingCareer" data-save data-optional></textarea>
 
+<div class="panel">
+  <strong>Look at the preparation level, outlook, and pay too.</strong>
+  <p class="small-ui">On your O*NET results, use the <strong>Job Zone</strong> filters. Job Zones 1–5 represent increasing levels of education, training, and experience. Pick <strong>two careers from different Job Zones</strong> that you would at least consider, then record what O*NET shows.</p>
+</div>
+
+<table>
+  <thead><tr><th>O*NET comparison</th><th>Career 1</th><th>Career 2</th></tr></thead>
+  <tbody>
+    <tr><td>Career</td><td><input id="zoneCareer1" type="text" data-save></td><td><input id="zoneCareer2" type="text" data-save></td></tr>
+    <tr><td>Job Zone (1–5)</td><td><input id="zone1" type="text" data-save></td><td><input id="zone2" type="text" data-save></td></tr>
+    <tr><td>Outlook shown by O*NET</td><td><input id="outlook1" type="text" data-save></td><td><input id="outlook2" type="text" data-save></td></tr>
+    <tr><td>Salary / wage shown</td><td><input id="zonePay1" type="text" data-save></td><td><input id="zonePay2" type="text" data-save></td></tr>
+  </tbody>
+</table>
+<label for="zoneNotice">What do you notice when you compare preparation level, outlook, and pay? Does more preparation always mean a better option?</label>
+<textarea id="zoneNotice" data-save></textarea>
+
 <h2>4. MOVE: What Matters Most?</h2>
 <span class="segment-tag">Stand up · move · discuss</span>
 <div class="prompt">
@@ -209,6 +226,13 @@
 <span class="segment-tag">Self-checking · no AI</span>
 <div class="prompt">
   Sort each situation by the <strong>primary preparation route being described</strong>. Use what the scenario says — not assumptions about the occupation.
+  <div class="small-ui" style="margin-top:8px">
+    <strong>Examples:</strong>
+    Paid work + classroom training = electrician apprenticeship ·
+    Short focused training / credential = welding certificate ·
+    College degree route = accounting degree ·
+    Employer / on-the-job training = a bank training a newly hired teller.
+  </div>
 </div>
 
 <div class="sort-pool" id="sortPool"></div>
@@ -263,23 +287,38 @@
   <p>For this unit, ROI is one lens — not a rule that says “always choose the highest salary.” Time, cost, risk, job opportunities, and psychic income all matter.</p>
 </div>
 
-<div class="grid2">
-  <div class="choice-card">
-    <h3>Path A</h3>
-    <p>4 years of preparation · $45,000 total cost · $62,000 expected starting salary · work that interests you a lot</p>
-  </div>
-  <div class="choice-card">
-    <h3>Path B</h3>
-    <p>1 year of preparation · $8,000 total cost · $50,000 expected starting salary · work that interests you less</p>
-  </div>
+<div class="prompt">
+  <strong>ROI example: becoming a teacher.</strong><br>
+  Maya wants to become a teacher. She could attend a private university and finish with about <strong>$120,000 in student-loan debt</strong>, or choose a lower-cost route that leads to the same required teaching license with much less debt. Either route could lead to a similar first teaching job and salary.
 </div>
 
-<label for="oppCost">What is one important opportunity cost of choosing Path A instead of Path B?</label>
+<label for="oppCost">What is one important opportunity cost of taking on $120,000 of debt for the private-school route?</label>
 <textarea id="oppCost" data-save></textarea>
-<label for="roiThinking">What else would you want to know before deciding which path gives the better overall return for you?</label>
+<label for="roiThinking">From a financial ROI point of view, what questions should Maya ask before choosing the private university? What non-money reasons might still matter?</label>
 <textarea id="roiThinking" data-save></textarea>
 
-<h2>9. My Working Path</h2>
+<h2>9. AI and the Future of Work</h2>
+<span class="segment-tag">Complement or substitute?</span>
+<div class="panel">
+  <p><strong>AI exposure does not automatically mean a job disappears.</strong> Jobs are made up of many different tasks.</p>
+  <p><span class="vocab" tabindex="0">Complement<span class="vocab-tip">Something that works with a person and makes the person's work more useful, productive, or effective.</span></span> means AI helps a worker do part of the job faster or better.</p>
+  <p><span class="vocab" tabindex="0">Substitute<span class="vocab-tip">Something that can take the place of a person for a particular task.</span></span> means AI can take over a task that a person used to do.</p>
+  <p class="small-ui">People sometimes use the phrase <strong>“desktop jobs”</strong> for work done mostly on computers, but that is not a precise risk category. Current research finds clerical and highly digitized tasks tend to have greater exposure to generative AI, while most occupations are more likely to have some tasks changed than to disappear completely.</p>
+  <a class="button-link" href="https://www.ilo.org/publications/generative-ai-and-jobs-2025-update" target="_blank" rel="noopener">Source: ILO 2025 update</a>
+</div>
+
+<table>
+  <thead><tr><th>Think about one career you explored</th><th>Your response</th></tr></thead>
+  <tbody>
+    <tr><td>Career</td><td><input id="aiCareer" type="text" data-save></td></tr>
+    <tr><td>One task AI might <strong>complement</strong> (help a person do)</td><td><textarea id="aiComplement" data-save></textarea></td></tr>
+    <tr><td>One task AI might <strong>substitute for</strong> (do instead of a person)</td><td><textarea id="aiSubstitute" data-save></textarea></td></tr>
+  </tbody>
+</table>
+<label for="aiRiskReflection">Does this make the career seem more risky, more useful with AI, or mostly unchanged to you? Explain briefly.</label>
+<textarea id="aiRiskReflection" data-save></textarea>
+
+<h2>10. My Working Path</h2>
 <span class="segment-tag">For this unit — not forever</span>
 <div class="gold-panel"><strong>This is a working choice, not a permanent commitment.</strong> You may change it as you learn more in later lessons.</div>
 <label for="workingPath">Career / pathway I currently want to investigate</label>
@@ -305,7 +344,7 @@
 <label for="workingUnknown">One thing I still need to investigate</label>
 <textarea id="workingUnknown" data-save></textarea>
 
-<h2>10. Closing Synthesis</h2>
+<h2>11. Closing Synthesis</h2>
 <span class="segment-tag">Independent · no AI</span>
 <div class="prompt">
   A friend tells you: <strong>“Just choose whichever career pays the most.”</strong>
@@ -352,10 +391,10 @@ let submittedAt = '';
 let lastCompletion = null;
 
 const SORT_BUCKETS = [
-  {key:'workclass', label:'Paid work + related classroom training'},
-  {key:'short', label:'Short focused training / skill credential'},
-  {key:'degree', label:'College degree route'},
-  {key:'employer', label:'Employer / on-the-job training'}
+  {key:'workclass', label:'Paid work + classroom training (example: electrician apprenticeship)'},
+  {key:'short', label:'Short focused training / credential (example: welding certificate)'},
+  {key:'degree', label:'College degree route (example: accounting degree)'},
+  {key:'employer', label:'Employer / on-the-job training (example: bank teller training)'}
 ];
 
 const SORT_CARDS = [
@@ -382,13 +421,14 @@ let sortState = {
 const REQUIRED_GROUPS = [
   {name:'Do Now', ids:['doNow']},
   {name:'PBS video reflection', ids:['videoQ1','videoQ2']},
-  {name:'O*NET profiler reflection', ids:['onetInterests','onetCareers','onetDisagree']},
+  {name:'O*NET profiler + Job Zone comparison', ids:['onetInterests','onetCareers','onetDisagree','zoneCareer1','zoneCareer2','zone1','zone2','outlook1','outlook2','zonePay1','zonePay2','zoneNotice']},
   {name:'MOVE reflection', ids:['moveReflection']},
   {name:'Psychic income choice', ids:['hobbyWhy','psychicIncome'], radio:'hobbyChoice'},
   {name:'Pathway sort', special:'sort'},
   {name:'Career / Path A research', ids:['aTitle','aWork','aTraining','aCredential','aTime','aPay','aAppeal','aConcern']},
   {name:'Career / Path B research', ids:['bTitle','bWork','bTraining','bCredential','bTime','bPay','bAppeal','bConcern']},
   {name:'Opportunity cost + ROI', ids:['oppCost','roiThinking']},
+  {name:'AI and future of work', ids:['aiCareer','aiComplement','aiSubstitute','aiRiskReflection']},
   {name:'Working path', ids:['workingPath','workingWhy','workingPrep','workingTime','workingPay','workingUnknown']},
   {name:'Closing synthesis', ids:['closing']}
 ];
@@ -812,7 +852,16 @@ function buildPrintReport(emergency=false){
       ['Top interest areas',valueFor('onetInterests')],
       ['Careers worth investigating',valueFor('onetCareers')],
       ['Result I question/disagree with',valueFor('onetDisagree')],
-      ['Career I already had in mind',valueFor('existingCareer')]
+      ['Career I already had in mind',valueFor('existingCareer')],
+      ['Job Zone Career 1',valueFor('zoneCareer1')],
+      ['Career 1 Job Zone',valueFor('zone1')],
+      ['Career 1 Outlook',valueFor('outlook1')],
+      ['Career 1 Pay',valueFor('zonePay1')],
+      ['Job Zone Career 2',valueFor('zoneCareer2')],
+      ['Career 2 Job Zone',valueFor('zone2')],
+      ['Career 2 Outlook',valueFor('outlook2')],
+      ['Career 2 Pay',valueFor('zonePay2')],
+      ['What I noticed',valueFor('zoneNotice')]
     ])}
 
     <h2>4. MOVE Reflection</h2>
@@ -851,7 +900,15 @@ function buildPrintReport(emergency=false){
       ['What else I would want to know',valueFor('roiThinking')]
     ])}
 
-    <h2>9. My Working Path</h2>
+    <h2>9. AI and the Future of Work</h2>
+    ${reportTable([
+      ['Career',valueFor('aiCareer')],
+      ['Task AI might complement',valueFor('aiComplement')],
+      ['Task AI might substitute for',valueFor('aiSubstitute')],
+      ['My AI-risk reflection',valueFor('aiRiskReflection')]
+    ])}
+
+    <h2>10. My Working Path</h2>
     ${reportTable([
       ['Working path',valueFor('workingPath')],
       ['Why it interests me',valueFor('workingWhy')],
@@ -861,7 +918,7 @@ function buildPrintReport(emergency=false){
       ['Still need to investigate',valueFor('workingUnknown')]
     ])}
 
-    <h2>10. Closing Synthesis</h2>
+    <h2>11. Closing Synthesis</h2>
     ${reportTable([['Response',valueFor('closing')]])}
   `;
   document.getElementById('print-report').innerHTML = report;
